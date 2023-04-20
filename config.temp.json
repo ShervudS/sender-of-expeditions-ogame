@@ -1,0 +1,7 @@
+{
+  "duration": 1, // Time expedition
+  "shis": {
+    "TRANSPORTER_LARGE": 50, // ship_name: amount_ship
+    "FIGHTER_LIGHT": 50 // ship_name: amount_ship
+  }
+}
