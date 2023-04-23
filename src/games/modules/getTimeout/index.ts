@@ -21,7 +21,7 @@ export const getTimeout = async (page: Page) => {
   sendMessageBot(
     `Ближайшее окончание экспедиии: ${new Date(
       firstExpeditionTimeEnd * 1000
-    ).toISOString()}`
+    ).toTimeString()}`
   );
 
   return firstExpeditionTimeEnd * 1000 - Date.now();

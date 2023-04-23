@@ -53,7 +53,7 @@ const sendExpedition = async (page: Page, expiditionConig: any) => {
         .waitForSelector("div#naviActions>a#sendFleet")
         .then((value) => value?.click()),
       page.waitForNavigation({ waitUntil: "networkidle2" }),
-      sendMessageBot(`Экспедиция отправлена: ${new Date().toISOString()}`),
+      sendMessageBot(`Экспедиция отправлена: ${new Date().toTimeString()}`),
     ]);
   }
 };

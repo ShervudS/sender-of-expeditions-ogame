@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
 import "dotenv/config.js";
 import { autorization } from "./modules/autorization";
 import { selectServer } from "./modules/selectServer";
@@ -7,15 +7,17 @@ import { sendExpeditions } from "./modules/sendExpeditions";
 import { getTimeout } from "./modules/getTimeout";
 import { sendResultExpeditions } from "./modules/resultOfExpedition";
 
-export const gameService = async () => {
+export const gameService = async (timer: number) => {
+  let browser: Browser | null = null;
+
   try {
-    const browser =
+    browser =
       process.env.NODE_ENV === "dev"
         ? await puppeteer.launch({
             headless: false,
           })
         : await puppeteer.connect({
-            browserWSEndpoint: `ws://browserless:${process.env.PORT}?token=${process.env.TOKEN}`,
+            browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.TOKEN}`,
           });
 
     const page = await browser.newPage();
@@ -68,27 +70,20 @@ export const gameService = async () => {
         .then((value) => value?.click());
     }
 
-    await sendExpeditions(gamePage!).catch(() => {
-      browser.close();
-    });
+    await sendExpeditions(gamePage!);
 
-    const time = await getTimeout(gamePage!);
+    timer = await getTimeout(gamePage!);
 
     await sendResultExpeditions(gamePage!);
 
     // // ==== Save cookies before exit into file ===
     saveCookies(await page.cookies());
-
-    // Don't close browser in dev
-    if (process.env.NODE_ENV !== "dev") {
-      await browser.close();
-    }
-
-    return setTimeout(() => {
-      gameService();
-    }, time);
   } catch (err) {
     console.log(err);
-    gameService();
+    gameService(timer);
+  } finally {
+    if (browser && process.env.NODE_ENV === "dev") {
+      browser?.close();
+    }
   }
 };
