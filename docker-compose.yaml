@@ -1,0 +1,10 @@
+version: "3"
+services:
+  ogame:
+    env_file:
+      - ./.env
+    build: ./
+    container_name: "ogame"
+    restart: always
+    ports:
+      - "3002:3000"
