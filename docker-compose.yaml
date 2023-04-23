@@ -1,0 +1,29 @@
+version: '3'
+services:
+  browserless:
+    image: browserless/chrome:latest
+    env_file:
+     - ./.env
+    container_name: "browserless"
+    ports:
+      - "9090:9090"
+    networks:
+      - ogame-network
+  ogame:
+    env_file:
+     - ./.env
+    build: ./
+    container_name: "ogame"
+    depends_on:
+      - browserless
+    restart: always
+    links:
+    #links to browserless container
+      - "browserless:browserless"
+    ports:
+      - "3002:3000"
+      - "3003:3001"
+    networks:
+      - ogame-network
+networks:
+  ogame-network:

@@ -1,4 +1,4 @@
-import { readFile, readFileSync, writeFile } from "fs";
+import { readFileSync, writeFile } from "fs";
 
 export const getLocalCookie = async () => {
   try {
@@ -7,13 +7,13 @@ export const getLocalCookie = async () => {
     });
     return JSON.parse(cookies);
   } catch (error) {
-    console.log(error);
+    console.log("Not found cookies file");
+    return { cookies: [] };
   }
 };
 
 export const saveCookies = async (cookies: any) => {
   writeFile("./cookies.json", JSON.stringify({ cookies }, null, 2), (err) => {
     if (err) throw err;
-    console.log("Data written to file");
   });
 };
