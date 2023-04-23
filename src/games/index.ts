@@ -7,8 +7,9 @@ import { sendExpeditions } from "./modules/sendExpeditions";
 import { getTimeout } from "./modules/getTimeout";
 import { sendResultExpeditions } from "./modules/resultOfExpedition";
 
-export const gameService = async (timer: number) => {
+export const gameService = async () => {
   let browser: Browser | null = null;
+  let timer: number = 0;
 
   try {
     browser =
@@ -80,10 +81,11 @@ export const gameService = async (timer: number) => {
     saveCookies(await page.cookies());
   } catch (err) {
     console.log(err);
-    gameService(timer);
   } finally {
     if (browser && process.env.NODE_ENV === "dev") {
       browser?.close();
     }
   }
+
+  return timer;
 };

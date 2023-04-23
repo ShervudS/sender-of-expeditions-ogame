@@ -24,5 +24,5 @@ export const getTimeout = async (page: Page) => {
     ).toTimeString()}`
   );
 
-  return firstExpeditionTimeEnd * 1000 - Date.now();
+  return firstExpeditionTimeEnd * 1000;
 };

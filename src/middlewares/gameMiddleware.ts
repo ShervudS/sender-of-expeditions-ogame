@@ -1,13 +1,16 @@
 import { gameService } from "../games";
 
 export const gameMiddleware = async () => {
-  let timer = 0;
+  let timer: number = 0;
 
-  await gameService(timer);
+  timer = await gameService();
 
   async function task() {
-    if (timer >= Date.now()) {
-      await gameService(timer);
+    const date = Date.now();
+    console.log(`different >>`, timer - date);
+
+    if (timer - date <= 0) {
+      timer = await gameService();
     }
 
     // Запускаем задачу через 10 минут
