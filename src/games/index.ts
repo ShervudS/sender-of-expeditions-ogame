@@ -82,7 +82,7 @@ export const gameService = async () => {
   } catch (err) {
     console.log(err);
   } finally {
-    if (browser && process.env.NODE_ENV === "dev") {
+    if (browser && process.env.NODE_ENV !== "dev") {
       browser?.close();
     }
   }

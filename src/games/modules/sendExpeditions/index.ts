@@ -1,6 +1,7 @@
 import { readFileSync } from "fs";
 import { Page } from "puppeteer";
 import { sendMessageBot } from "../../../bot";
+import { expedetionConig } from "../../../configs/config";
 
 const getAmountExpedition = async (page: Page) => {
   return await page.$eval(
@@ -9,26 +10,26 @@ const getAmountExpedition = async (page: Page) => {
   );
 };
 
-const sendExpedition = async (page: Page, expiditionConig: any) => {
-  if (Object.keys(expiditionConig).length) {
-    Object.keys(expiditionConig!.battleShips).forEach(async (ship) => {
+const sendExpedition = async (page: Page) => {
+  if (Object.keys(expedetionConig).length) {
+    Object.keys(expedetionConig!.battleShips).forEach(async (ship) => {
       await page
         .waitForSelector(`ul#military>li.${ship}>input`)
         .then(async (value) => {
           await value?.press("Backspace");
-          await value?.type(`${expiditionConig.battleShips[ship]}`);
+          await value?.type(`${expedetionConig.battleShips[ship]}`);
           await value?.press("Tab");
         })
         .catch(() => console.log("Отсутствуют корабли для отправки"));
     });
     await new Promise((r) => setTimeout(r, 1000));
 
-    Object.keys(expiditionConig!.civil).forEach(async (ship) => {
+    Object.keys(expedetionConig!.civil).forEach(async (ship) => {
       await page
         .waitForSelector(`ul#civil>li.${ship}>input`)
         .then(async (value) => {
           await value?.press("Backspace");
-          await value?.type(`${expiditionConig.civil[ship]}`);
+          await value?.type(`${expedetionConig.civil[ship]}`);
           await value?.press("Tab");
         })
         .catch(() => console.log("Отсутствуют корабли для отправки"));
@@ -72,11 +73,8 @@ export const sendExpeditions = async (page: Page) => {
   if (expeditionCounter.length && expeditionCounter[0] < expeditionCounter[1]) {
     let amountExpedionon =
       Number(expeditionCounter[1]) - Number(expeditionCounter[0]);
-    const expiditionConig: any = JSON.parse(
-      readFileSync("./config.json", "utf8")
-    );
     for (let i = 0; i < amountExpedionon; i++) {
-      await sendExpedition(page, expiditionConig);
+      await sendExpedition(page);
     }
   }
 };
