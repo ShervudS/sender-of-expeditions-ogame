@@ -1,28 +1,29 @@
-name: Docker Image CI
+name: Docker Hub Deploy
 
 on:
   push:
-    branches: [ master ]
+    branches: [main]
 
 jobs:
-
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: docker login
-      env:
-        DOCKER_USER: ${{secrets.docker.DOCKER_USER}}
-        DOCKER_PASSWORD: ${{secrets.docker.DOCKER_PASSWORD}}
-      run: docker login -u ${{env.DOCKER_USER}} -p ${{env.DOCKER_PASSWORD}} 
-    - name: Build the Docker image
-      env:
-        DOCKER_USER: ${{secrets.docker.DOCKER_USER}}
-      run: docker build . --file Dockerfile --tag ${{env.DOCKER_USER}}/ogame:$(date +%s)
-      
-    - name: Docker Push
-      env:
-        DOCKER_USER: ${{secrets.docker.DOCKER_USER}}
-      run: docker push ${{env.DOCKER_USER}}/ogame
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build Docker image
+      run: docker build -t $username/ogame:latest .
+
+    - name: Push Docker image to Docker Hub
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: $username/ogame:latest
