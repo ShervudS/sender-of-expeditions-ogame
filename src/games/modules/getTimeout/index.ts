@@ -9,16 +9,17 @@ export const getTimeout = async (page: Page) => {
 
   await page.waitForSelector("div#inhalt");
 
-  const firstExpeditionTimeEnd = await page.$eval(
+  const firstExpeditionTimeEnd = await page.$$eval(
     "div#inhalt>div.fleetDetails",
-    (div) => Number(div?.getAttribute("data-arrival-time") || 0)
+    (arrFleets) =>
+      arrFleets.map((div) => Number(div?.getAttribute("data-arrival-time")))
   );
+
+  const minTime = Math.min(...firstExpeditionTimeEnd);
 
   sendMessageBot(
-    `Ближайшее окончание экспедиии: ${new Date(
-      firstExpeditionTimeEnd * 1000
-    ).toTimeString()}`
+    `Ближайшее окончание экспедиии: ${new Date(minTime * 1000).toTimeString()}`
   );
 
-  return firstExpeditionTimeEnd * 1000;
+  return minTime * 1000;
 };
