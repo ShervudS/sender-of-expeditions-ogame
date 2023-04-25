@@ -14,16 +14,15 @@ jobs:
     - uses: actions/checkout@v2
     - name: docker login
       env:
-        DOCKER_USER: ${{env.DOCKER_USER}}
-        DOCKER_PASSWORD: ${{env.DOCKER_PASSWORD}}
-      run: |
-        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: docker login -u ${{env.DOCKER_USER}} -p ${{env.DOCKER_PASSWORD}} 
     - name: Build the Docker image
       env:
-        DOCKER_USER: ${{env.DOCKER_USER}}
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
       run: docker build . --file Dockerfile --tag ${{env.DOCKER_USER}}/ogame:$(date +%s)
       
     - name: Docker Push
       env:
-        DOCKER_USER: ${{env.DOCKER_USER}}
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
       run: docker push ${{env.DOCKER_USER}}/ogame
