@@ -1,9 +1,9 @@
-import { readFileSync } from "fs";
 import { Page } from "puppeteer";
 import { sendMessageBot } from "../../../bot";
 import { expedetionConig } from "../../../configs/config";
 
 const getAmountExpedition = async (page: Page) => {
+  console.log("Check amount expeditions");
   return await page.$eval(
     "div.fleetStatus>div#slots>div.fleft:last-child>span",
     (span) => span?.textContent?.split(":")[1].trim().split("/")
@@ -11,62 +11,71 @@ const getAmountExpedition = async (page: Page) => {
 };
 
 const sendExpedition = async (page: Page) => {
-  if (Object.keys(expedetionConig).length) {
-    Object.keys(expedetionConig!.battleShips).forEach(async (ship) => {
-      await page
-        .waitForSelector(`ul#military>li.${ship}>input`)
-        .then(async (value) => {
-          await value?.press("Backspace");
-          await value?.type(`${expedetionConig.battleShips[ship]}`);
-          await value?.press("Tab");
-        })
-        .catch(() => console.log("Отсутствуют корабли для отправки"));
-    });
-    await new Promise((r) => setTimeout(r, 1000));
+  console.log("Send");
+  await page
+    ?.waitForSelector("form#shipsChosen")
+    .then(async () => {
+      // Проверяем есть ли конфиг
+      if (Object.keys(expedetionConig).length) {
+        // Добавляем боевые коробли
+        for (let ship in expedetionConig!.battleShips) {
+          const input = await page.$(`ul#military>li.${ship}>input`);
+          if (input) {
+            await input.type(`${expedetionConig.battleShips[ship]}`, {
+              delay: 100,
+            });
+          }
+        }
 
-    Object.keys(expedetionConig!.civil).forEach(async (ship) => {
-      await page
-        .waitForSelector(`ul#civil>li.${ship}>input`)
-        .then(async (value) => {
-          await value?.press("Backspace");
-          await value?.type(`${expedetionConig.civil[ship]}`);
-          await value?.press("Tab");
-        })
-        .catch(() => console.log("Отсутствуют корабли для отправки"));
+        // Добавляем коробли
+        for (let ship in expedetionConig!.civil) {
+          const input = await page.$(`ul#civil>li.${ship}>input`);
+          if (input) {
+            await input.type(`${expedetionConig.civil[ship]}`, {
+              delay: 100,
+            });
+          }
+        }
+      }
+    })
+    .then(async () => {
+      await page.click("div#allornone a#continueToFleet2");
     });
 
-    await new Promise((r) => setTimeout(r, 500));
+  await page.waitForSelector("div#fleetboxdestination").then(async () => {
+    await new Promise((r) => setTimeout(r, 2000));
+
     await page
-      .waitForSelector("div#allornone a#continueToFleet2")
-      .then((value) => value?.click());
+      .waitForSelector("div.coords>input#position")
+      .then(async (input) => {
+        await input?.focus();
+        await input?.type("99");
+      });
 
-    await new Promise((r) => setTimeout(r, 1000));
-    await page.waitForSelector("div.coords>input#position").then((value) => {
-      value?.press("Backspace");
-      value?.press("Backspace");
-      value?.type("16");
-    });
+    await new Promise((r) => setTimeout(r, 3000));
 
-    await new Promise((r) => setTimeout(r, 1000));
-
-    await Promise.all([
-      page
-        .waitForSelector("div#naviActions>a#sendFleet")
-        .then((value) => value?.click()),
-      page.waitForNavigation({ waitUntil: "networkidle2" }),
-      sendMessageBot(`Экспедиция отправлена: ${new Date().toTimeString()}`),
-    ]);
-  }
+    await page
+      .waitForSelector("div#naviActions>a#sendFleet")
+      .then((value) => value?.click())
+      .then(() => {
+        sendMessageBot(`Экспедиция отправлена: ${new Date().toTimeString()}`);
+      })
+      .catch(() => {
+        console.log("Ошибка при отправке");
+      });
+  });
 };
 
 export const sendExpeditions = async (page: Page) => {
+  console.log("SendExpeditions");
+
   await Promise.all([
     page
       .waitForSelector(
         "ul#menuTable>li>a[href='https://s186-ru.ogame.gameforge.com/game/index.php?page=ingame&component=fleetdispatch']"
       )
       .then((value) => value?.click()),
-    page.waitForNavigation({ waitUntil: "load" }),
+    page.waitForSelector("div.fleetStatus>div#slots"),
   ]);
 
   const expeditionCounter = (await getAmountExpedition(page)) || [];

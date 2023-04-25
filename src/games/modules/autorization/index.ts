@@ -2,34 +2,22 @@ import { Page } from "puppeteer";
 import "dotenv/config.js";
 
 export const autorization = async (page: Page) => {
+  console.log("Autorization");
   // open tab for login
   await page
-    .waitForSelector("div#loginRegisterTabs > ul.tabsList > li:first-child")
+    .waitForSelector("div#loginRegisterTabs>ul.tabsList>li:first-child")
     .then((value) => value?.click());
+
+  await page.waitForSelector("div#loginTab");
 
   // Enter user email
-  await page
-    .waitForSelector("input[type='email']")
-    .then((value) => value?.type(process.env.USER_MAIL as string));
+  await page?.type("input[type='email']", process.env.USER_MAIL as string);
 
   // enter user password
-  await page
-    .waitForSelector("input[type='password']")
-    .then((value) => value?.type(process.env.USER_PASSWORD as string));
+  await page?.type(
+    "input[type='password']",
+    process.env.USER_PASSWORD as string
+  );
 
-  // click for button sumbit
-  await page
-    .waitForSelector("button[type='submit']")
-    .then((value) => value?.click());
-
-  // wait for reload page
-  await page.waitForNavigation();
-
-  // go to the game
-  await Promise.all([
-    page.click("#joinGame .button"),
-    page.waitForNavigation({ waitUntil: "networkidle2" }),
-  ]);
-
-  return;
+  await page.mainFrame().click("form#loginForm>p>button[type='submit']");
 };
