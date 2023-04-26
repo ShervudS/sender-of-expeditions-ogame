@@ -103,6 +103,7 @@ export const gameService = async () => {
     if (browser && process.env.NODE_ENV !== "dev") {
       browser?.close();
     }
+    console.log("Next timer >> ", timer);
     return timer;
   }
 };

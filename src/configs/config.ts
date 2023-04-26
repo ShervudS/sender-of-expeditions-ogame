@@ -1,9 +1,9 @@
 export const expedetionConig: any = {
   duration: 1,
   battleShips: {
-    fighterLight: 25,
+    fighterLight: 50,
   },
   civil: {
-    transporterLarge: 25,
+    transporterLarge: 50,
   },
 };
