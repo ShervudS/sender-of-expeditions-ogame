@@ -2,6 +2,7 @@ import { Page } from "puppeteer";
 import { sendMessageBot } from "../../../bot";
 
 export const sendResultExpeditions = async (page: Page) => {
+  console.log("Send result expeditions");
   await Promise.all([
     page
       .waitForSelector("div#notificationbarcomponent a.comm_menu.messages")

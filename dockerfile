@@ -13,4 +13,5 @@ FROM app
 WORKDIR /app
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/package*.json ./
+COPY ./cookies.json  ./
 CMD ["npm", "start"]

@@ -4,7 +4,6 @@ services:
     env_file:
       - ./.env
     build: ./
-    image: theshervud/ogame
     container_name: "ogame"
     restart: always
     ports:

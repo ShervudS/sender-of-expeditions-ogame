@@ -6,7 +6,7 @@ import { gameService } from "./games";
 const app: Express = express();
 const port = process.env.API_PORT || 3000;
 
-app.get("/", async (req: Request, res: Response) => {
+app.get("/send", async (req: Request, res: Response) => {
   const timer = await gameService();
   res.send(`Ok ${timer}`);
 });

@@ -2,10 +2,10 @@
   "name": "sender-of-expeditions-ogame",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "./dist/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node ./dist/server.js"
   },
   "repository": {
     "type": "git",
