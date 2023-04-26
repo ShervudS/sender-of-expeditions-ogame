@@ -63,6 +63,8 @@ const sendExpedition = async (page: Page) => {
       .catch(() => {
         console.log("Ошибка при отправке");
       });
+
+    await page.waitForNavigation();
   });
 };
 
